@@ -1,0 +1,57 @@
+{
+  "name": "kucun-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "本地库存出入库管理桌面系统",
+  "main": "dist/main/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm rebuild:electron && concurrently -k \"vite --host 127.0.0.1\" \"wait-on tcp:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+    "build": "tsc -p tsconfig.node.json && vite build",
+    "start": "electron .",
+    "test": "pnpm rebuild:node && vitest run",
+    "rebuild:node": "cross-env npm_config_cache=.cache/npm npm_config_devdir=.cache/node-gyp pnpm rebuild better-sqlite3",
+    "rebuild:electron": "cross-env npm_config_cache=.cache/npm npm_config_devdir=.cache/node-gyp electron_config_cache=.cache/electron electron-builder install-app-deps",
+    "package:mac": "pnpm build && pnpm rebuild:electron && electron-builder --mac",
+    "package:win": "pnpm build && pnpm rebuild:electron && cross-env ELECTRON_CACHE=.cache/electron ELECTRON_BUILDER_CACHE=.cache/electron-builder electron-builder --win"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "better-sqlite3": "^11.8.1",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^6.0.7",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.local.kucun",
+    "productName": "库存管理",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
