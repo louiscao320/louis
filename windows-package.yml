@@ -1,0 +1,44 @@
+name: Windows 安装包
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  package-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: 读取项目
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 运行测试
+        run: pnpm test
+
+      - name: 打 Windows 安装包
+        run: pnpm package:win
+
+      - name: 上传安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: kucun-windows-installer
+          path: |
+            dist/*.exe
+            dist/*.blockmap
+            dist/latest.yml
